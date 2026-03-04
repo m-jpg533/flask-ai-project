@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Drive - GPS Upload</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<h2>司機 GPS 上傳</h2>
+<button onclick="startTracking()">開始追蹤</button>
+<p id="status"></p>
+
+<script>
+function startTracking() {
+  if (!navigator.geolocation) {
+    alert("瀏覽器不支援定位");
+    return;
+  }
+
+  navigator.geolocation.watchPosition(
+    pos => {
+      fetch("/update_location", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude
+        })
+      });
+
+      document.getElementById("status").innerText =
+        "已上傳: " + pos.coords.latitude + ", " + pos.coords.longitude;
+    },
+    err => console.log(err),
+    { enableHighAccuracy: true }
+  );
+}
+</script>
+</body>
+</html>
