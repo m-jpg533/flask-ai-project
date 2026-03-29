@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>追蹤中</title>
+</head>
+<body>
+
+<h2>📡 位置上傳中...</h2>
+
+<script>
+let lastSend = 0;
+
+navigator.geolocation.watchPosition(pos => {
+
+  let now = Date.now();
+
+  // 每5秒送一次（防止爆量）
+  if (now - lastSend > 5000) {
+    lastSend = now;
+
+    fetch("/save-location", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude
+      })
+    });
+
+    console.log("已送出GPS");
+  }
+
+}, err => {
+  alert("請開啟定位權限");
+}, {
+  enableHighAccuracy: true
+});
+</script>
+
+</body>
+</html>
